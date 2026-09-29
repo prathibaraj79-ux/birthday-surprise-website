@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Birthday Surprise 🎂</title>
+<style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+        min-height: 100vh;
+        font-family: Arial, sans-serif;
+        background: linear-gradient(135deg, #111827, #1e293b, #312e81);
+        color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow-x: hidden;
+    }
+
+    .container {
+        width: 92%;
+        max-width: 600px;
+        text-align: center;
+        padding: 30px 20px;
+    }
+
+    .card {
+        background: rgba(255,255,255,0.10);
+        backdrop-filter: blur(12px);
+        border-radius: 25px;
+        padding: 35px 25px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+        border: 1px solid rgba(255,255,255,0.15);
+    }
+
+    h1 {
+        font-size: 38px;
+        margin-bottom: 10px;
+    }
+
+    .subtitle {
+        font-size: 22px;
+        margin-bottom: 30px;
+        color: #dbeafe;
+    }
+
+    .emoji {
+        font-size: 60px;
+        margin-bottom: 15px;
+        animation: bounce 1.5s infinite;
+    }
+
+    @keyframes bounce {
+        0%,100% { transform: translateY(0); }
+        50% { transform: translateY(-12px); }
+    }
+
+    p {
+        font-size: 18px;
+        line-height: 1.6;
+        margin: 15px 0;
+    }
+
+    button {
+        border: none;
+        padding: 13px 28px;
+        margin: 10px;
+        border-radius: 30px;
+        font-size: 17px;
+        cursor: pointer;
+        transition: 0.25s;
+    }
+
+    button:hover {
+        transform: scale(1.08);
+    }
+
+    .yes {
+        background: #22c55e;
+        color: white;
+    }
+
+    .no {
+        background: #ef4444;
+        color: white;
+    }
+
+    .hidden-message {
+        display: none;
+        margin-top: 25px;
+        padding: 18px;
+        border-radius: 18px;
+        background: rgba(255,255,255,0.12);
+        animation: appear 0.5s ease;
+    }
+
+    @keyframes appear {
+        from {
+            opacity: 0;
+            transform: translateY(15px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .question {
+        margin-top: 30px;
+    }
+
+    input, textarea {
+        width: 90%;
+        max-width: 450px;
+        padding: 14px;
+        margin-top: 12px;
+        border-radius: 15px;
+        border: none;
+        outline: none;
+        font-size: 16px;
+    }
+
+    textarea {
+        min-height: 100px;
+        resize: vertical;
+    }
+
+    .final {
+        display: none;
+    }
+
+    .small {
+        font-size: 14px;
+        opacity: 0.7;
+        margin-top: 20px;
+    }
+
+    .confetti {
+        position: fixed;
+        top: -20px;
+        font-size: 22px;
+        animation: fall linear forwards;
+        pointer-events: none;
+    }
+
+    @keyframes fall {
+        to {
+            transform: translateY(110vh) rotate(720deg);
+            opacity: 0;
+        }
+    }
+</style>
+</head>
+<body>
+<div class="container">
+    <div class="card" id="startPage">
+        <div class="emoji">🎂</div>
+        <h1>Happy Birthday Aswin! 🎉</h1>
+        <div class="subtitle">My Korangu 💙</div>
+        <p>Someone has prepared a little birthday surprise for you... 👀</p>
+        <p>Do you want to see this?</p>
+        <button class="yes" onclick="yesClicked()">YES 😌</button>
+        <button class="no" onclick="noClicked()">NO 😭</button>
+        <p id="noMessage" class="small"></p>
+    </div>
+
+    <div class="card" id="surprisePage" style="display:none;">
+        <div class="emoji">🎁</div>
+        <h1>Okayyy! 😌</h1>
+        <p>Since you said YES...</p>
+        <p>Your birthday surprise officially starts now! 🎉</p>
+        <div id="messageBox" class="hidden-message"></div>
+        <button class="yes" onclick="showHiddenMessage()">Open a Hidden Message 🔐</button>
+        <div class="question">
+            <p>One small question... 👀</p>
+            <h2>Who am I for you?</h2>
+            <input type="text" id="whoAnswer" placeholder="Type your answer...">
+            <br>
+            <button class="yes" onclick="nextQuestion()">Continue ➜</button>
+        </div>
+    </div>
+
+    <div class="card final" id="finalPage">
+        <div class="emoji">🥳</div>
+        <h1>One Last Question!</h1>
+        <p>How is your day? 💫</p>
+        <textarea id="dayAnswer" placeholder="Tell me about your day..."></textarea>
+        <br>
+        <button class="yes" onclick="finishBirthday()">Submit 💌</button>
+        <div id="finalMessage"></div>
+    </div>
+</div>
+
+<script>
+let noCount = 0;
+
+const noMessages = [
+    "Are you sure? 👀",
+    "Think again bro 😂",
+    "NO is not accepted here 😭",
+    "Nice try... click YES 😌",
+    "Again? Seriously? 😂",
+    "The NO button is getting tired 💀",
+    "You have unlimited chances... but the answer is still YES 😭",
+    "Okay fine... ask again 😌",
+    "Still NO?! 😭",
+    "I will keep asking forever 😂"
+];
+
+function noClicked() {
+    noCount++;
+    const message = noMessages[(noCount - 1) % noMessages.length];
+    document.getElementById("noMessage").innerText = message;
+}
+
+function yesClicked() {
+    document.getElementById("startPage").style.display = "none";
+    document.getElementById("surprisePage").style.display = "block";
+    createConfetti();
+}
+
+const hiddenMessages = [
+    "Hidden Message #1 🔐 — You are officially older today. Don't act too grown up 😂",
+    "Hidden Message #2 🤫 — There is someone who wanted to make your birthday a little more special.",
+    "Hidden Message #3 👀 — You may never guess how much thought went into this little surprise.",
+    "Hidden Message #4 💫 — Keep smiling today. Birthday boy privilege 😌",
+    "Hidden Message #5 🎁 — This message was hidden... but your birthday wasn't forgotten.",
+    "Hidden Message #6 🤭 — Okay, that's enough secrets for now... maybe.",
+    "Hidden Message #7 💙 — Some people are simply impossible to forget.",
+    "Hidden Message #8 🎂 — Happy Birthday once again, Aswin!"
+];
+
+let messageIndex = 0;
+
+function showHiddenMessage() {
+    const box = document.getElementById("messageBox");
+    box.style.display = "block";
+    box.innerText = hiddenMessages[messageIndex];
+    messageIndex++;
+    if (messageIndex >= hiddenMessages.length) {
+        messageIndex = 0;
+    }
+}
+
+function nextQuestion() {
+    const answer = document.getElementById("whoAnswer").value.trim();
+    if (answer === "") {
+        alert("At least write something 😭");
+        return;
+    }
+    document.getElementById("surprisePage").style.display = "none";
+    document.getElementById("finalPage").style.display = "block";
+}
+
+function finishBirthday() {
+    const answer = document.getElementById("dayAnswer").value.trim();
+    if (answer === "") {
+        alert("Tell me how your day is! 👀");
+        return;
+    }
+
+    document.getElementById("finalMessage").innerHTML = `
+        <div class="hidden-message" style="display:block;">
+            <h2>Thank you for answering! 💌</h2>
+            <p>And once again...</p>
+            <h2>🎂 HAPPY BIRTHDAY ASWIN! 🎉</h2>
+            <p>Have a beautiful day and keep smiling! ✨</p>
+        </div>
+    `;
+
+    createConfetti();
+}
+
+function createConfetti() {
+    const emojis = ["🎉", "🎂", "🎈", "✨", "💙", "🥳"];
+
+    for (let i = 0; i < 35; i++) {
+        const confetti = document.createElement("div");
+        confetti.className = "confetti";
+        confetti.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+        confetti.style.left = Math.random() * 100 + "vw";
+        confetti.style.animationDuration = (Math.random() * 3 + 2) + "s";
+        document.body.appendChild(confetti);
+
+        setTimeout(() => {
+            confetti.remove();
+        }, 5000);
+    }
+}
+</script>
+</body>
+</html>
